@@ -7,6 +7,10 @@ const character = {
     demageHP: '100',
     elementHP: document.getElementById('health-character'),
     elementProgressBar: document.getElementById('progressbar-character'),
+    renderHP: renderHP,
+    renderHPLife: renderHPLife,
+    renderProgressBarHP: renderProgressBarHP,
+    changeHP: changeHP
 }
 
 const enemy = {
@@ -15,45 +19,50 @@ const enemy = {
     demageHP: '100',
     elementHP: document.getElementById('health-enemy'),
     elementProgressBar: document.getElementById('progressbar-enemy'),
+    renderHP: renderHP,
+    renderHPLife: renderHPLife,
+    renderProgressBarHP: renderProgressBarHP,
+    changeHP: changeHP
 }
 
 btn.addEventListener('click', function () {
-    changeHP(random(20), character);
-    changeHP(random(20), enemy);
+    character.changeHP(random(20));
+    enemy.changeHP(random(20));
 })
 
 superBtn.addEventListener('click', function () {
-    changeHP(random(20, true), character);
-    changeHP(random(20, true), enemy);
+    character.changeHP(random(20, true));
+    enemy.changeHP(random(20, true));
 })
 
 function init() {
-    renderHP(character);
-    renderHP(enemy);
+    character.renderHP();
+    enemy.renderHP();
 }
 
-function renderHP(person) {
-    renderHPLife(person);
-    renderProgressBarHP(person);
+function renderHP() {
+    this.renderHPLife();
+    this.renderProgressBarHP();
 }
 
-function renderHPLife(person) {
-    person.elementHP.innerText = person.demageHP + ' / ' + person.defaultHP;
+function renderHPLife() {
+    this.elementHP.innerText = this.demageHP + ' / ' + this.defaultHP;
 }
 
-function renderProgressBarHP(person) {
-    person.elementProgressBar.style.width = person.demageHP + '%';
+function renderProgressBarHP() {
+    this.elementProgressBar.style.width = this.demageHP + '%';
 }
 
-function changeHP(count, person) {
-    if (person.demageHP < count) {
-        person.demageHP = 0;
-        alert('Покемон ' + person.name + ' проиграл!')
+function changeHP(count) {
+    if (this.demageHP < count) {
+        this.demageHP = 0;
+        alert('Покемон ' + this.name + ' проиграл!')
         btn.disabled = true;
+        superBtn.disabled = true;
     } else {
-        person.demageHP -= count;
+        this.demageHP -= count;
     }
-    renderHP(person);
+    this.renderHP();
 }
 
 function random(num, isSuper) {
