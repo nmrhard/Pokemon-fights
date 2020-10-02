@@ -476,3 +476,14 @@ h1 {
 .action label {
     padding: 6px 0;
 }
+
+.logs-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.logs-list li {
+    margin-top: 20px;
+    font-size: 18px;
+}
