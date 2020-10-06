@@ -1,9 +1,8 @@
-const btn = document.getElementById('btn-kick');
-const superBtn = document.getElementById('btn-super-kick');
-
-const elementBody = document.querySelector('.body');
-const elementLogs = document.createElement('div');
-const elementLogsList = document.createElement('ul');
+import Pokemon from './pokemon.js';
+import random from './util.js';
+import { generateLog, renderLogs } from './log.js';
+import { elementBody, elementLogs, elementLogsList, btn, superBtn } from './element.js';
+import checkKicks from './check.js';
 
 elementLogs.id = 'logs';
 elementBody.appendChild(elementLogs);
@@ -11,143 +10,47 @@ elementBody.appendChild(elementLogs);
 elementLogsList.classList.add('logs-list');
 elementLogs.appendChild(elementLogsList);
 
+const maxCountKicksBtnKick = 10;
+const maxCountKicksBtnSuperKick = 3;
 
-const character = {
+const countKickButtonClick = checkKicks(maxCountKicksBtnKick, btn);
+const countSuperKickButtonClick = checkKicks(maxCountKicksBtnSuperKick, superBtn);
+
+const character = new Pokemon({
     name: 'Pikachu',
-    defaultHP: '100',
-    demageHP: '100',
-    elementHP: document.getElementById('health-character'),
-    elementProgressBar: document.getElementById('progressbar-character'),
-    renderHP,
-    renderHPLife,
-    renderProgressBarHP,
-    changeHP
-}
+    defaultHP: 150,
+    demageHP: 150,
+    selectors: 'character'
+})
 
-const enemy = {
+const enemy = new Pokemon({
     name: 'Charmander',
-    defaultHP: '100',
-    demageHP: '100',
-    elementHP: document.getElementById('health-enemy'),
-    elementProgressBar: document.getElementById('progressbar-enemy'),
-    renderHP,
-    renderHPLife,
-    renderProgressBarHP,
-    changeHP
-}
+    defaultHP: 130,
+    demageHP: 130,
+    selectors: 'enemy'
+})
 
 btn.addEventListener('click', function () {
-    character.changeHP(random(20));
-    enemy.changeHP(random(20));
+    character.changeHP(random(20), function (count) {
+        const log = generateLog(character, enemy, count);
+        renderLogs(log);
+    });
+    enemy.changeHP(random(20), function (count) {
+        const log = generateLog(enemy, character, count);
+        renderLogs(log);
+    });
 })
-
 
 superBtn.addEventListener('click', function () {
-    character.changeHP(random(20, true));
-    enemy.changeHP(random(20, true));
+    character.changeHP(random(20, true), function (count) {
+        const log = generateLog(character, enemy, count);
+        renderLogs(log);
+    });
+    enemy.changeHP(random(20, true), function (count) {
+        const log = generateLog(enemy, character, count);
+        renderLogs(log);
+    });
 })
-
-function init() {
-    character.renderHP();
-    enemy.renderHP();
-}
-
-function renderHP() {
-    this.renderHPLife();
-    this.renderProgressBarHP();
-}
-
-function renderHPLife() {
-    const { elementHP, demageHP, defaultHP } = this;
-    elementHP.innerText = demageHP + ' / ' + defaultHP;
-}
-
-function renderProgressBarHP() {
-    const { elementProgressBar, demageHP } = this;
-    elementProgressBar.style.width = demageHP + '%';
-}
-
-function changeHP(count) {
-    const { name } = this;
-
-    this.demageHP -= count;
-
-    const log = this === enemy ? generateLog(this, character, count) : generateLog(this, enemy, count);
-    renderLogs(log);
-
-    if (this.demageHP <= count) {
-        this.demageHP = 0;
-        alert('Покемон ' + name + ' проиграл!')
-        btn.disabled = true;
-        superBtn.disabled = true;
-    }
-
-    this.renderHP();
-}
-
-function random(num, isSuper) {
-    let random = 0;
-    if (isSuper) {
-        let max = num * 1.5;
-        let min = num * 0.5;
-        random = min + Math.random() * (max + 1 - min);
-    } else {
-        random = Math.random() * num;
-    }
-
-    return Math.ceil(random);
-}
-
-function generateLog(firstPerson, secondPerson, kick) {
-    const { name: firstPersonName, demageHP, defaultHP } = firstPerson;
-    const { name: secondPersonName } = secondPerson;
-    
-    const logs = [
-        `${firstPersonName} вспомнил что-то важное, но неожиданно ${secondPersonName}, не помня себя от испуга, ударил в предплечье врага. \n -${kick}, [${demageHP}/${defaultHP}]`,
-        `${firstPersonName} поперхнулся, и за это ${secondPersonName} с испугу приложил прямой удар коленом в лоб врага. \n -${kick}, [${demageHP}/${defaultHP}]`,
-        `${firstPersonName} забылся, но в это время наглый ${secondPersonName}, приняв волевое решение, неслышно подойдя сзади, ударил. \n -${kick}, [${demageHP}/${defaultHP}]`,
-        `${firstPersonName} пришел в себя, но неожиданно ${secondPersonName} случайно нанес мощнейший удар \n -${kick}, [${demageHP}/${defaultHP}].`,
-        `${firstPersonName} поперхнулся, но в это время ${secondPersonName} нехотя раздробил кулаком \<вырезанно цензурой\> противника. \n -${kick}, [${demageHP}/${defaultHP}]`,
-        `${firstPersonName} удивился, а ${secondPersonName} пошатнувшись влепил подлый удар. \n -${kick}, [${demageHP}/${defaultHP}]`,
-        `${firstPersonName} высморкался, но неожиданно ${secondPersonName} провел дробящий удар. \n -${kick}, [${demageHP}/${defaultHP}]`,
-        `${firstPersonName} пошатнулся, и внезапно наглый ${secondPersonName} беспричинно ударил в ногу противника \n -${kick}, [${demageHP}/${defaultHP}]`,
-        `${firstPersonName} расстроился, как вдруг, неожиданно ${secondPersonName} случайно влепил стопой в живот соперника. \n -${kick}, [${demageHP}/${defaultHP}]`,
-        `${firstPersonName} пытался что-то сказать, но вдруг, неожиданно ${secondPersonName} со скуки, разбил бровь сопернику. \n -${kick}, [${demageHP}/${defaultHP}]`
-    ];
-
-    return logs[random(logs.length - 1)];
-}
-
-function renderLogs (log) {
-    const elementLogText = document.createElement('li');
-    elementLogText.innerText = log;
-
-    elementLogsList.insertBefore(elementLogText, elementLogsList.children[0]);
-}
-
-const maxCountKicksBtnKick = 8;
-const maxCountKicksBtnSuperKick = 2;
-
-const textKickButton = btn.innerText;
-const textSuperKickButton = superBtn.innerText;
-
-btn.innerText += ` (${maxCountKicksBtnKick})`;
-superBtn.innerText += ` (${maxCountKicksBtnSuperKick})`;
-
-function checkKicks(maxCountKicks, textButton) {
-    return function () {
-        maxCountKicks -= 1;
-        this.innerText = `${textButton} (${maxCountKicks})`;
-        if (maxCountKicks === 0) {
-            this.disabled = true;
-        }
-    }
-}
-
-const countKickButtonClick = checkKicks(maxCountKicksBtnKick, textKickButton);
-const countSuperKickButtonClick = checkKicks(maxCountKicksBtnSuperKick, textSuperKickButton);
 
 btn.addEventListener('click', countKickButtonClick);
 superBtn.addEventListener('click', countSuperKickButtonClick);
-
-init();
