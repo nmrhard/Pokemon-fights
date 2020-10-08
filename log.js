@@ -1,4 +1,4 @@
-import random from './util.js';
+import { random } from './util.js';
 import { elementLogsList } from './element.js';
 
 export function generateLog(firstPerson, secondPerson, kick) {

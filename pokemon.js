@@ -1,5 +1,5 @@
 
-import { btn, superBtn } from './element.js';
+// import { btn, superBtn } from './element.js';
 
 class Selector {
     constructor(name) {
@@ -9,12 +9,13 @@ class Selector {
 }
 
 class Pokemon extends Selector {
-    constructor({ name, defaultHP, demageHP, selectors}) {
+    constructor({ name, defaultHP, demageHP, selectors, attacks}) {
         super(selectors);
 
         this.name = name,
         this.defaultHP = defaultHP,
-        this.demageHP = demageHP
+        this.demageHP = demageHP,
+        this.attacks = attacks
 
         this.renderHP();
     }
