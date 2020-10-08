@@ -1,8 +1,7 @@
 import Pokemon from './pokemon.js';
-import { random, checkKicks } from './util.js';
+import { random, checkKicks, randomPokemon } from './util.js';
 import { generateLog, renderLogs } from './log.js';
 import { elementBody, elementLogs, elementLogsList, elementControl } from './element.js';
-import { pokemons } from './pokemons.js';
 
 elementLogs.id = 'logs';
 elementBody.appendChild(elementLogs);
@@ -10,24 +9,37 @@ elementBody.appendChild(elementLogs);
 elementLogsList.classList.add('logs-list');
 elementLogs.appendChild(elementLogsList);
 
-// const maxCountKicksBtnKick = 10;
-// const maxCountKicksBtnSuperKick = 3;
+const firstPokemon = randomPokemon();
+const secondPokemon = randomPokemon();
 
-// const countKickButtonClick = checkKicks(maxCountKicksBtnKick, btn);
-// const countSuperKickButtonClick = checkKicks(maxCountKicksBtnSuperKick, superBtn);
+const characterPokemonName = document.querySelector('#name-character');
+const characterPokemonImage = document.querySelector('.character .sprite');
+characterPokemonName.innerText = firstPokemon.name;
+characterPokemonImage.src = firstPokemon.img;
 
-const pikachu = pokemons.find(item => item.name === 'Pikachu');
-const charmander = pokemons.find(item => item.name === 'Charmander');
+const enemyPokemonName = document.querySelector('#name-enemy');
+const enemyPokemonImage = document.querySelector('.enemy .sprite');
+enemyPokemonName.innerText = secondPokemon.name;
+enemyPokemonImage.src = secondPokemon.img;
 
 const character = new Pokemon({
-    ...pikachu,
+    ...firstPokemon,
     selectors: 'character'
 })
 
 const enemy = new Pokemon({
-    ...character,
+    ...secondPokemon,
     selectors: 'enemy'
 })
+
+function doEnemyFirstKick() {
+    const firstKick = enemy.attacks[0]; 
+    console.log(firstKick);
+    character.changeHP(random(firstKick.maxDamage, firstKick.minDamage), (count) => {
+        const log = generateLog(character, enemy, count);
+        renderLogs(log);
+    });
+}
 
 character.attacks.forEach(item => {
     const btn = document.createElement('button');
@@ -36,37 +48,13 @@ character.attacks.forEach(item => {
     const countKicks = checkKicks(item.maxCount, btn);
 
     btn.addEventListener('click', () => {
-        character.changeHP(random(item.maxDamage, item.minDamage), (count) => {
-            const log = generateLog(character, enemy, count);
+        doEnemyFirstKick();
+        enemy.changeHP(random(item.maxDamage, item.minDamage), (count) => {
+            const log = generateLog(enemy, character, count);
             renderLogs(log);
         });
         countKicks();
     })
+
     elementControl.appendChild(btn);
 });
-
-
-// btn.addEventListener('click', function () {
-//     character.changeHP(random(20), function (count) {
-//         const log = generateLog(character, enemy, count);
-//         renderLogs(log);
-//     });
-//     enemy.changeHP(random(20), function (count) {
-//         const log = generateLog(enemy, character, count);
-//         renderLogs(log);
-//     });
-// })
-
-// superBtn.addEventListener('click', function () {
-//     character.changeHP(random(20, true), function (count) {
-//         const log = generateLog(character, enemy, count);
-//         renderLogs(log);
-//     });
-//     enemy.changeHP(random(20, true), function (count) {
-//         const log = generateLog(enemy, character, count);
-//         renderLogs(log);
-//     });
-// })
-
-// btn.addEventListener('click', countKickButtonClick);
-// superBtn.addEventListener('click', countSuperKickButtonClick);

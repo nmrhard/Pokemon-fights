@@ -1,6 +1,3 @@
-
-// import { btn, superBtn } from './element.js';
-
 class Selector {
     constructor(name) {
         this.elementHP = document.getElementById(`health-${name}`);
@@ -9,25 +6,29 @@ class Selector {
 }
 
 class Pokemon extends Selector {
-    constructor({ name, defaultHP, demageHP, selectors, attacks}) {
+    constructor({ name, hp, selectors, attacks}) {
         super(selectors);
 
         this.name = name,
-        this.defaultHP = defaultHP,
-        this.demageHP = demageHP,
+        this.defaultHP = hp,
+        this.demageHP = hp,
         this.attacks = attacks
 
         this.renderHP();
     }
 
-    changeHP = (count, cb) => {
+    changeHP = (count, cb) => { 
+        const minPokemonHP = 0;   
         this.demageHP -= count;
-    
-        if (this.demageHP <= count) {
-            this.demageHP = 0;
+
+        if (this.demageHP <= minPokemonHP) {
+            this.demageHP = minPokemonHP;
             alert('Покемон ' + this.name + ' проиграл!');
-            btn.disabled = true;
-            superBtn.disabled = true;
+
+            const allKickButtons = document.querySelectorAll('.control .button');
+            allKickButtons.forEach( item => {
+                item.disabled = true;
+            });
         }
     
         this.renderHP();
