@@ -561,6 +561,12 @@ h1 {
     margin-bottom: 40px;
 }
 
+.warning {
+    font-size: 21px;
+    font-weight: bold;
+    color: #ce5d3f;
+}
+
 ::-webkit-scrollbar {
     width: 10px;
 }
