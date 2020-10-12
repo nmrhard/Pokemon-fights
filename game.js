@@ -1,7 +1,8 @@
 import { elementBody, elementLogs, elementLogsList, elementControl } from './element.js';
 import Pokemon from './pokemon.js';
-import { random, checkKicks, randomPokemon } from './util.js';
+import { random, checkKicks } from './util.js';
 import { generateLog, renderLogs } from './log.js';
+import Backend from './backend.js';
 
 class Game {
     renderLogList = () => {
@@ -18,17 +19,30 @@ class Game {
         return newPokemon;
     }
 
+    getPokemonsDamage = async (characterId, enemyId, damageId) => {
+        const backend = new Backend();
+        const damage = await backend.getDamage(characterId, enemyId, damageId);
+        return damage.kick;
+    }
+
     rednerKickButtons = (character, enemy) => {
-        character.attacks.forEach(item => {
+        character.attacks.forEach(async (item) => {
             const btn = document.createElement('button');
             btn.innerText = item.name;
             btn.classList.add('button');
             const countKicks = checkKicks(item.maxCount, btn);
+
+            const damage = await this.getPokemonsDamage(character.id, enemy.id, item.id);
+            const characterDamage = damage.player1;
+            const enemyDamage = damage.player2;
         
             btn.addEventListener('click', () => {
-                this.doEnemyFirstKick(character, enemy);
-                enemy.changeHP(random(item.maxDamage, item.minDamage), (count) => {
-                    const log = generateLog(enemy, character, count);
+                character.changeHP(enemyDamage, (enemyDamage) => {
+                    const log = generateLog(character, enemy, enemyDamage);
+                    renderLogs(log);
+                });
+                enemy.changeHP(characterDamage, (characterDamage) => {
+                    const log = generateLog(enemy, character, characterDamage);
                     renderLogs(log);
                 });
                 countKicks();
@@ -45,9 +59,10 @@ class Game {
         });
     }
 
-    startGame = () => {
-        const firstPokemon = randomPokemon();
-        const secondPokemon = randomPokemon();
+    startGame = async () => {
+        const backend = new Backend();
+        const firstPokemon = await backend.getRandomPokemon();
+        const secondPokemon =  await backend.getRandomPokemon();
 
         if (firstPokemon && secondPokemon) {
             let character = this.createPokemon(firstPokemon,'character');
