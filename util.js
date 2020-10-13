@@ -1,14 +1,18 @@
-function random(num, isSuper) {
-    let random = 0;
-    if (isSuper) {
-        let max = num * 1.5;
-        let min = num * 0.5;
-        random = min + Math.random() * (max + 1 - min);
-    } else {
-        random = Math.random() * num;
-    }
+import Backend from './backend.js';
 
-    return Math.ceil(random);
+export function random(max, min = 0) {
+    const num = max - min;
+    return Math.ceil(Math.random() * num) + min;
 }
 
-export default random;
+export function checkKicks(maxCountKicks, element) {
+    const btnText = element.innerText;
+    element.innerText = `${btnText} (${maxCountKicks})`
+    return function () {
+        maxCountKicks -= 1;
+        element.innerText = `${btnText} (${maxCountKicks})`;
+        if (maxCountKicks === 0) {
+            element.disabled = true;
+        }
+    }
+}

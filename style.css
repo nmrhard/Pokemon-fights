@@ -37,7 +37,7 @@ body {
 
 .control {
     width          : 320px;
-    height         : 260px;
+    min-height         : 260px;
     position       : relative;
     margin         : 20px;
     display        : flex;
@@ -309,6 +309,7 @@ body {
     outline       : none !important;
     cursor        : pointer;
     font-size     : 18px;
+    text-transform: capitalize;
 
 }
 
@@ -558,6 +559,12 @@ h1 {
 
 .logs-list li:nth-child(2n) {
     margin-bottom: 40px;
+}
+
+.warning {
+    font-size: 21px;
+    font-weight: bold;
+    color: #ce5d3f;
 }
 
 ::-webkit-scrollbar {
